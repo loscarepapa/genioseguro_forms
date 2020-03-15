@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API-PHP</title>
+</head>
+<body>
+
+
+<select name="" id="selectName"></select>
+<select name="" id="selectVersion"></select>
+<select name="" id="selectYear"></select>
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+
+  <script>
+    let templateName = "<option value=''>Elije la marca</option>";
+    let templateVersion = "<option value=''>Elije la version</option>";
+    let templateYear = "<option value=''>Elije el año</option>";
+    let noRepeatName = [];
+    let noRepeatVersion = [];
+    let noRepeatYear = [];
+    let json;
+    let camionName;
+    let camionVersion;
+    let numOpciones;
+    $.ajax({
+        url: "api-php.php",
+        type: "GET",
+        data: "",
+        success: function(response){
+            json = JSON.parse(response);
+            numOpciones = json.length;
+                for (let a = 0; a < json.length; a++) {
+                    
+                    function searchMarca(marca){
+                        return marca == json[a].name
+                    }
+
+                    if(!noRepeatName.find(searchMarca)){
+                        noRepeatName[noRepeatName.length] = json[a].name;
+                        templateName += `<option value="${json[a].name}">${json[a].name}</option>`;
+                    }
+                }
+
+            $("#selectName").html(templateName);
+        }
+    });
+
+    
+    $("#selectName").change(function(evt){
+        camionName = $("#selectName").val();
+        $("#selectVersion").empty();
+        templateVersion = "<option value=''>Elije la version</option>"; 
+        noRepeatVersion = [];
+        for (let i = 0; i < json.length; i++) {
+            if(json[i].name == camionName){
+
+                function searchVersion(version){
+                    return version == json[i].version
+                }
+
+                if(!noRepeatVersion.find(searchVersion)){
+                    noRepeatVersion[noRepeatVersion.length] = json[i].version;
+                    templateVersion += `<option value="${json[i].version}">${json[i].version}</option>`;
+                }
+
+                $("#selectVersion").html(templateVersion);
+            }
+        }
+    })
+
+
+    $("#selectVersion").change(function(evt){
+        camionVersion = $("#selectVersion").val();
+        $("#selectYear").empty();
+        templateYear = "<option value=''>Elije el año</option>";
+        noRepeatYear = [];
+        for (let i = 0; i < json.length; i++) {
+            if(json[i].name == camionName && json[i].version == camionVersion){
+
+                function searchYear(year){
+                    return year == json[i].year
+                }
+
+                if(!noRepeatYear.find(searchYear)){
+                    noRepeatYear[noRepeatYear.length] = json[i].year;
+                    templateYear += `<option value="${json[i].year}">${json[i].year}</option>`;
+                }
+
+                $("#selectYear").html(templateYear);
+            }
+        }
+    })
+  </script>
+</body>
+</html>
